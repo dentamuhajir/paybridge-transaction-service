@@ -6,13 +6,30 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"paybridge-transaction-service/internal/config"
+	"paybridge-transaction-service/internal/db"
 	"paybridge-transaction-service/internal/server"
 	"syscall"
 	"time"
 )
 
 func main() {
-	e := server.NewRouter()
+
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("Config error: %v", err)
+	}
+
+	pg, err := db.NewPostgres(cfg.Database.DSN)
+	if err != nil {
+		log.Fatalf("Postgres error: %v", err)
+	}
+
+	deps := &server.Dependencies{
+		DB: pg,
+	}
+
+	e := server.NewRouter(deps)
 
 	go func() {
 		log.Println("Server starting on port 8083...")
