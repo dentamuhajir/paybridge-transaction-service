@@ -1,7 +1,7 @@
 package server
 
 import (
-	"net/http"
+	"paybridge-transaction-service/internal/health"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -13,10 +13,8 @@ type Dependencies struct {
 
 func NewRouter(deps *Dependencies) *echo.Echo {
 	e := echo.New()
-
-	e.GET("/health", func(c echo.Context) error {
-		return c.String(http.StatusOK, "OK")
-	})
-
+	healthService := health.NewService(deps.DB)
+	healthHandler := health.NewHandler(*healthService)
+	healthHandler.RegisterRoutes(e.Group(""))
 	return e
 }
