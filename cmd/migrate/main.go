@@ -11,7 +11,12 @@ import (
 func main() {
 	godotenv.Load(".env")
 
-	migrationType := "up"
+	if len(os.Args) < 2 {
+		log.Fatal("Usage: go run main.go [up|down|status|redo]")
+	}
+
+	migrationType := os.Args[1]
+
 	cmd := exec.Command("sql-migrate", migrationType, "-config", "dbconfig.yml", "-env", "development")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
