@@ -1,4 +1,0 @@
-Step to migrations
-create a dbconfig.yml
-create folder migrations 
-Generate sql-migrate new create_wallets
