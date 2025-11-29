@@ -15,6 +15,6 @@ func NewRouter(deps *Dependencies) *echo.Echo {
 	e := echo.New()
 	healthService := health.NewService(deps.DB)
 	healthHandler := health.NewHandler(*healthService)
-	healthHandler.RegisterRoutes(e.Group(""))
+	healthHandler.RegisterRoutes(e.Group("/api/v1"))
 	return e
 }
