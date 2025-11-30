@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"net/http"
+	"paybridge-transaction-service/internal/server/middleware"
 
 	"github.com/labstack/echo/v4"
 )
@@ -15,7 +16,7 @@ func NewHandler(svc Service) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(g echo.Group) {
-	g.POST("/wallet/create", h.Create)
+	g.POST("/wallet/create", h.Create, middleware.ValidateInternalToken)
 }
 
 func (h *Handler) Create(c echo.Context) error {
