@@ -75,4 +75,10 @@ paths:
       summary: Create wallet
       tags:
       - Wallet
+securityDefinitions:
+  InternalTokenAuth:
+    description: 'Provide token as: Bearer <token>'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

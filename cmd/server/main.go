@@ -10,6 +10,10 @@ import (
 // @version 1.0
 // @description API documentation for Transaction Services
 // @BasePath /api/v1
+// @securityDefinitions.apikey InternalTokenAuth
+// @in header
+// @name Authorization
+// @description Provide token as: Bearer <token>
 func main() {
 	cfg, err := config.Load()
 	if err != nil {

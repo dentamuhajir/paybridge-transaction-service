@@ -18,18 +18,6 @@ func NewService(repo Repository) Service {
 	return &service{repo: repo}
 }
 
-// Create Wallet
-// @Summary Create wallet
-// @Description Create a new wallet for a user
-// @Tags Wallet
-// @Accept json
-// @Produce json
-// @Param request body CreateWalletReq true "Wallet creation payload"
-// @Success 200 {object} response.SwaggerSuccessResponse
-// @Failure 400 {object} response.SwaggerErrorResponse
-// @Failure 500 {object} response.SwaggerErrorResponse
-// @Security InternalTokenAuth
-// @Router /wallet [post]
 func (s *service) CreateWallet(ctx context.Context, req CreateWalletReq) (*CreateWalletResp, error) {
 
 	userUUID, err := uuid.Parse(req.UserID)

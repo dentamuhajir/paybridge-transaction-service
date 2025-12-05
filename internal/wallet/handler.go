@@ -20,6 +20,18 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	g.POST("/wallet", h.Create, middleware.ValidateInternalToken)
 }
 
+// CreateWalletHandler godoc
+// @Summary Create wallet
+// @Description Create a new wallet for a user
+// @Tags Wallet
+// @Accept json
+// @Produce json
+// @Param request body CreateWalletReq true "Wallet creation payload"
+// @Success 200 {object} response.SwaggerSuccessResponse
+// @Failure 400 {object} response.SwaggerErrorResponse
+// @Failure 500 {object} response.SwaggerErrorResponse
+// @Security InternalTokenAuth
+// @Router /wallet [post]
 func (h *Handler) Create(c echo.Context) error {
 	var req CreateWalletReq
 
