@@ -8,35 +8,109 @@
     },
     "basePath": "/api/v1",
     "paths": {
-        "/health/db": {
-            "get": {
-                "description": "Returns UP if DB is healthy, DOWN otherwise",
+        "/wallet": {
+            "post": {
+                "security": [
+                    {
+                        "InternalTokenAuth": []
+                    }
+                ],
+                "description": "Create a new wallet for a user",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Health"
+                    "Wallet"
                 ],
-                "summary": "Check database health",
+                "summary": "Create wallet",
+                "parameters": [
+                    {
+                        "description": "Wallet creation payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/wallet.CreateWalletReq"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/response.SwaggerSuccessResponse"
                         }
                     },
-                    "503": {
-                        "description": "Service Unavailable",
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/response.SwaggerErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.SwaggerErrorResponse"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "response.SwaggerErrorResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "always null on errors"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "bad request"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
+                }
+            }
+        },
+        "response.SwaggerSuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string",
+                    "example": "success"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "wallet.CreateWalletReq": {
+            "type": "object",
+            "required": [
+                "currency",
+                "user_id"
+            ],
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         }

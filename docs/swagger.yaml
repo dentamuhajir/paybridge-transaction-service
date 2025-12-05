@@ -1,29 +1,78 @@
 basePath: /api/v1
+definitions:
+  response.SwaggerErrorResponse:
+    properties:
+      data:
+        description: always null on errors
+      message:
+        example: bad request
+        type: string
+      status:
+        example: 400
+        type: integer
+      success:
+        example: false
+        type: boolean
+    type: object
+  response.SwaggerSuccessResponse:
+    properties:
+      data: {}
+      message:
+        example: success
+        type: string
+      status:
+        example: 200
+        type: integer
+      success:
+        example: true
+        type: boolean
+    type: object
+  wallet.CreateWalletReq:
+    properties:
+      currency:
+        type: string
+      user_id:
+        type: string
+    required:
+    - currency
+    - user_id
+    type: object
 info:
   contact: {}
   description: API documentation for Transaction Services
   title: Paybridge Transaction Service API
   version: "1.0"
 paths:
-  /health/db:
-    get:
-      description: Returns UP if DB is healthy, DOWN otherwise
+  /wallet:
+    post:
+      consumes:
+      - application/json
+      description: Create a new wallet for a user
+      parameters:
+      - description: Wallet creation payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/wallet.CreateWalletReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
-        "503":
-          description: Service Unavailable
+            $ref: '#/definitions/response.SwaggerSuccessResponse'
+        "400":
+          description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Check database health
+            $ref: '#/definitions/response.SwaggerErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.SwaggerErrorResponse'
+      security:
+      - InternalTokenAuth: []
+      summary: Create wallet
       tags:
-      - Health
+      - Wallet
 swagger: "2.0"

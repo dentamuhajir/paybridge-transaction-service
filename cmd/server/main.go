@@ -6,6 +6,10 @@ import (
 	"paybridge-transaction-service/internal/server"
 )
 
+// @title Paybridge Transaction Service API
+// @version 1.0
+// @description API documentation for Transaction Services
+// @BasePath /api/v1
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
