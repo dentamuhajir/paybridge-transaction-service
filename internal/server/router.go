@@ -26,7 +26,7 @@ func NewRouter(deps *Dependencies) *echo.Echo {
 	docs.SwaggerInfo.BasePath = apiVersion
 
 	// Swagger route
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	e.GET("/swagger-ui/*", echoSwagger.WrapHandler)
 
 	healthService := health.NewService(deps.DB)
 	healthHandler := health.NewHandler(*healthService)
