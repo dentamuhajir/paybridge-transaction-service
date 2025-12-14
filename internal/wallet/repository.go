@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.uber.org/zap"
 )
 
 type Repository interface {
@@ -11,11 +12,12 @@ type Repository interface {
 }
 
 type repository struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	log *zap.Logger
 }
 
-func NewRepository(db *pgxpool.Pool) Repository {
-	return &repository{db: db}
+func NewRepository(db *pgxpool.Pool, log *zap.Logger) Repository {
+	return &repository{db: db, log: log}
 }
 
 func (r *repository) Create(ctx context.Context, w *Wallet) (*Wallet, error) {

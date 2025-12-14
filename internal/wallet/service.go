@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type Service interface {
@@ -12,10 +13,11 @@ type Service interface {
 
 type service struct {
 	repo Repository
+	log  *zap.Logger
 }
 
-func NewService(repo Repository) Service {
-	return &service{repo: repo}
+func NewService(repo Repository, log *zap.Logger) Service {
+	return &service{repo: repo, log: log}
 }
 
 func (s *service) CreateWallet(ctx context.Context, req CreateWalletReq) (*CreateWalletResp, error) {

@@ -6,18 +6,10 @@ import (
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var Log *zap.Logger
-
-// Initialize the logger
-func Init() {
-	var err error
-	Log, err = zap.NewProduction()
-	if err != nil {
-		panic(err)
-	}
-}
 
 // Context keys for trace
 type ctxKey string
@@ -26,6 +18,17 @@ const (
 	CtxTraceID ctxKey = "trace_id"
 	CtxSpanID  ctxKey = "span_id"
 )
+
+// New creates a zap logger instance (DI entry point)
+func New() (*zap.Logger, error) {
+	cfg := zap.NewProductionConfig()
+
+	// Optional: customize encoder for ECS-like output
+	cfg.EncoderConfig.TimeKey = "@timestamp"
+	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+
+	return cfg.Build()
+}
 
 // Info logs an info-level message with trace/span from context
 func Info(ctx context.Context, message string, fields ...zap.Field) {

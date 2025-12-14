@@ -3,22 +3,16 @@ package server
 import (
 	"paybridge-transaction-service/docs"
 	"paybridge-transaction-service/internal/health"
-	"paybridge-transaction-service/internal/logger"
 	"paybridge-transaction-service/internal/server/middleware"
 	"paybridge-transaction-service/internal/wallet"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"go.uber.org/zap"
 )
 
-type Dependencies struct {
-	DB *pgxpool.Pool
-}
-
-func NewRouter(deps *Dependencies) *echo.Echo {
-
-	logger.Init()
+func NewRouter(db *pgxpool.Pool, log *zap.Logger) *echo.Echo {
 
 	e := echo.New()
 
@@ -35,12 +29,12 @@ func NewRouter(deps *Dependencies) *echo.Echo {
 	// Swagger route
 	e.GET("/swagger-ui/*", echoSwagger.WrapHandler)
 
-	healthService := health.NewService(deps.DB)
+	healthService := health.NewService(db)
 	healthHandler := health.NewHandler(*healthService)
 	healthHandler.RegisterRoutes(e.Group(apiVersion))
-	walletRepo := wallet.NewRepository(deps.DB)
-	walletService := wallet.NewService(walletRepo)
-	walletHandler := wallet.NewHandler(walletService)
+	walletRepo := wallet.NewRepository(db, log)
+	walletService := wallet.NewService(walletRepo, log)
+	walletHandler := wallet.NewHandler(walletService, log)
 	walletHandler.RegisterRoutes(e.Group(apiVersion))
 
 	return e
