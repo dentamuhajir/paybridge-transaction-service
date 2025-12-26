@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"paybridge-transaction-service/internal/logger"
+	"paybridge-transaction-service/internal/infra/logger"
 
 	"github.com/labstack/echo/v4"
 )
