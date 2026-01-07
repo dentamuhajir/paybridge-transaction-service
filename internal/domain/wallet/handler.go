@@ -21,6 +21,25 @@ func NewHandler(svc Service, log *zap.Logger) *Handler {
 
 func (h *Handler) RegisterRoutes(g *echo.Group) {
 	g.POST("/wallet", h.Create, middleware.ValidateInternalToken)
+	g.GET("/wallet/:userID", h.Get, middleware.ValidateInternalToken)
+}
+
+func (h *Handler) Get(c echo.Context) error {
+	userID := c.Param("userID")
+	ctx := c.Request().Context()
+
+	resp, err := h.service.InquiryWallet(ctx, userID)
+	if err != nil {
+		log.Error(ctx, "failed to inquiry wallet", err)
+		return c.JSON(
+			http.StatusInternalServerError,
+			response.Error("failed to inquiry wallet", http.StatusInternalServerError),
+		)
+	}
+
+	return c.JSON(http.StatusOK,
+		response.Success("Inquiry wallet", resp, http.StatusOK),
+	)
 }
 
 // CreateWalletHandler godoc
