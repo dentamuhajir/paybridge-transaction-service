@@ -57,9 +57,10 @@ func (s *service) InquiryWallet(ctx context.Context, userID string) (*InquiryWal
 	}
 
 	return &InquiryWalletResp{
-		UserID:  result.UserID.String(),
-		Balance: result.Balance,
-		Status:  result.Status,
+		UserID:   result.UserID.String(),
+		Balance:  result.Balance,
+		Currency: result.Currency,
+		Status:   result.Status,
 	}, nil
 
 }
