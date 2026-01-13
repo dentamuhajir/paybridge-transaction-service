@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"paybridge-transaction-service/internal/config"
-	"paybridge-transaction-service/internal/domain/wallet"
+	"paybridge-transaction-service/internal/wallet"
 	kafkaInfra "paybridge-transaction-service/internal/infra/kafka"
 
 	"github.com/segmentio/kafka-go"

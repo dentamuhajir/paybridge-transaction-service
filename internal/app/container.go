@@ -2,7 +2,7 @@ package app
 
 import (
 	"paybridge-transaction-service/internal/config"
-	"paybridge-transaction-service/internal/domain/wallet"
+	"paybridge-transaction-service/internal/wallet"
 	"paybridge-transaction-service/internal/infra/logger"
 	"paybridge-transaction-service/internal/infra/postgres"
 
