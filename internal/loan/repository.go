@@ -11,6 +11,7 @@ import (
 
 type Repository interface {
 	Create(ctx context.Context, loan entity.LoanApplication) (entity.LoanApplication, error)
+	Approval(ctx context.Context, loan entity.LoanApplication) (entity.LoanApplication, error)
 }
 
 type repository struct {
@@ -64,6 +65,33 @@ func (r *repository) Create(ctx context.Context, loan entity.LoanApplication) (e
 
 	if err != nil {
 		r.log.Error("failed to create loan application", zap.Error(err))
+		return entity.LoanApplication{}, err
+	}
+
+	return loan, nil
+}
+
+func (r *repository) Approval(ctx context.Context, loan entity.LoanApplication) (entity.LoanApplication, error) {
+	now := time.Now()
+	loan.CreatedAt = now
+
+	query := `
+		UPDATE loan_applications SET status = $2, updated_at = $3 WHERE id = $1 
+		RETURNING id, status, updated_at
+	`
+
+	err := r.db.QueryRow(ctx, query,
+		loan.ID,
+		loan.Status,
+		loan.UpdatedAt,
+	).Scan(
+		&loan.ID,
+		&loan.Status,
+		&loan.UpdatedAt,
+	)
+
+	if err != nil {
+		r.log.Error("failed to approve loan application", zap.Error(err))
 		return entity.LoanApplication{}, err
 	}
 

@@ -1,8 +1,8 @@
-package dto
+package loan
 
 import "github.com/google/uuid"
 
-type LoanAppCreateReq struct {
+type LoanAppCreateRequest struct {
 	UserID       uuid.UUID `json:"user_id"`
 	ProductID    uuid.UUID `json:"product_id"`
 	Amount       int64     `json:"amount"`
@@ -11,7 +11,17 @@ type LoanAppCreateReq struct {
 	AdminFee     int64     `json:"admin_fee"`
 }
 
-type LoanAppCreateResp struct {
+type LoanAppCreateResponse struct {
+	ID     string `db:"id"`
+	Status string `db:"status"`
+}
+
+type LoanApprovalRequest struct {
+	ID     uuid.UUID `json:"user_id"`
+	Status string    `json:"status"`
+}
+
+type LoanApprovalResponse struct {
 	ID     string `db:"id"`
 	Status string `db:"status"`
 }

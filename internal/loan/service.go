@@ -2,14 +2,14 @@ package loan
 
 import (
 	"context"
-	"paybridge-transaction-service/internal/loan/dto"
 	"paybridge-transaction-service/internal/loan/entity"
 
 	"go.uber.org/zap"
 )
 
 type Service interface {
-	Create(ctx context.Context, req dto.LoanAppCreateReq) (*dto.LoanAppCreateResp, error)
+	Create(ctx context.Context, req LoanAppCreateRequest) (*LoanAppCreateResponse, error)
+	Approval(ctx context.Context, req LoanApprovalRequest) (*LoanApprovalResponse, error)
 }
 
 type service struct {
@@ -21,7 +21,7 @@ func NewService(r Repository, log *zap.Logger) Service {
 	return &service{repo: r, log: log}
 }
 
-func (s *service) Create(ctx context.Context, req dto.LoanAppCreateReq) (*dto.LoanAppCreateResp, error) {
+func (s *service) Create(ctx context.Context, req LoanAppCreateRequest) (*LoanAppCreateResponse, error) {
 
 	loan := entity.LoanApplication{
 		UserID:       req.UserID,
@@ -37,8 +37,27 @@ func (s *service) Create(ctx context.Context, req dto.LoanAppCreateReq) (*dto.Lo
 		return nil, err
 	}
 
-	return &dto.LoanAppCreateResp{
+	return &LoanAppCreateResponse{
 		ID:     result.ID.String(),
 		Status: result.Status,
 	}, nil
+}
+
+func (s *service) Approval(ctx context.Context, req LoanApprovalRequest) (*LoanApprovalResponse, error) {
+	loan := entity.LoanApplication{
+		ID:     req.ID,
+		Status: req.Status,
+	}
+
+	result, err := s.repo.Approval(ctx, loan)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &LoanApprovalResponse{
+		ID:     result.ID.String(),
+		Status: req.Status,
+	}, nil
+
 }
