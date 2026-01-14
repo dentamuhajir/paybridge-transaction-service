@@ -2,8 +2,8 @@ package loan
 
 import (
 	"context"
-	"paybridge-transaction-service/internal/domain/loan/dto"
-	"paybridge-transaction-service/internal/domain/loan/entity"
+	"paybridge-transaction-service/internal/loan/dto"
+	"paybridge-transaction-service/internal/loan/entity"
 
 	"go.uber.org/zap"
 )

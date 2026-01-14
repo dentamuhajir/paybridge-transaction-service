@@ -2,7 +2,7 @@ package loan
 
 import (
 	"net/http"
-	"paybridge-transaction-service/internal/domain/loan/dto"
+	"paybridge-transaction-service/internal/loan/dto"
 	"paybridge-transaction-service/internal/server/middleware"
 	"paybridge-transaction-service/pkg/response"
 
