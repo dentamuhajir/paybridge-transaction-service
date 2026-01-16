@@ -2,9 +2,12 @@ package loan
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"paybridge-transaction-service/internal/loan/entity"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
@@ -13,6 +16,8 @@ type Repository interface {
 	Create(ctx context.Context, loan entity.LoanApplication) (entity.LoanApplication, error)
 	Approval(ctx context.Context, loan entity.LoanApplication) (entity.LoanApplication, error)
 }
+
+var ErrLoanNotPendingOrNotFound = errors.New("loan not pending or not found")
 
 type repository struct {
 	db  *pgxpool.Pool
@@ -74,8 +79,10 @@ func (r *repository) Approval(ctx context.Context, loan entity.LoanApplication) 
 	now := time.Now()
 	loan.CreatedAt = now
 
+	fmt.Printf("%+v\n", loan)
+
 	query := `
-		UPDATE loan_applications SET status = $2, updated_at = $3 WHERE id = $1 
+		UPDATE loan_applications SET status = $2, updated_at = $3 WHERE id = $1 AND status = 'PENDING'
 		RETURNING id, status, updated_at
 	`
 
@@ -90,7 +97,11 @@ func (r *repository) Approval(ctx context.Context, loan entity.LoanApplication) 
 	)
 
 	if err != nil {
-		r.log.Error("failed to approve loan application", zap.Error(err))
+		if err == pgx.ErrNoRows {
+			r.log.Error("Err Loan Not Pending Or Not Found ", zap.Error(err))
+			return entity.LoanApplication{}, ErrLoanNotPendingOrNotFound
+		}
+		r.log.Error("failed to approve loan application ", zap.Error(err))
 		return entity.LoanApplication{}, err
 	}
 

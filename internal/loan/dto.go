@@ -22,7 +22,7 @@ type LoanAppCreateResponse struct {
 }
 
 type LoanApprovalRequest struct {
-	ID     uuid.UUID `json:"user_id"`
+	ID     uuid.UUID `json:"id"`
 	Status string    `json:"status"`
 }
 

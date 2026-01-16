@@ -2,8 +2,11 @@ package loan
 
 import (
 	"context"
+	"errors"
 	"paybridge-transaction-service/internal/loan/entity"
+	"time"
 
+	"github.com/labstack/gommon/log"
 	"go.uber.org/zap"
 )
 
@@ -35,6 +38,7 @@ func (s *service) Create(ctx context.Context, req LoanAppCreateRequest) (*LoanAp
 
 	result, err := s.repo.Create(ctx, loan)
 	if err != nil {
+		log.Error(ctx, "error in service", err)
 		return nil, err
 	}
 
@@ -46,13 +50,17 @@ func (s *service) Create(ctx context.Context, req LoanAppCreateRequest) (*LoanAp
 
 func (s *service) Approval(ctx context.Context, req LoanApprovalRequest) (*LoanApprovalResponse, error) {
 	loan := entity.LoanApplication{
-		ID:     req.ID,
-		Status: req.Status,
+		ID:        req.ID,
+		Status:    req.Status,
+		UpdatedAt: time.Now(),
 	}
 
 	result, err := s.repo.Approval(ctx, loan)
 
 	if err != nil {
+		if errors.Is(err, ErrLoanNotPendingOrNotFound) {
+			return nil, err
+		}
 		return nil, err
 	}
 

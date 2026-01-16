@@ -1,6 +1,7 @@
 package loan
 
 import (
+	"errors"
 	"net/http"
 	"paybridge-transaction-service/internal/server/middleware"
 	"paybridge-transaction-service/pkg/response"
@@ -72,6 +73,11 @@ func (h *Handler) Approval(c echo.Context) error {
 	resp, err := h.service.Approval(ctx, req)
 
 	if err != nil {
+		if errors.Is(err, ErrLoanNotPendingOrNotFound) {
+			return c.JSON(
+				http.StatusNotFound,
+				response.Error(err.Error(), http.StatusNotFound))
+		}
 		log.Error(ctx, "failed to update approval of loan application", err)
 		return c.JSON(
 			http.StatusInternalServerError,
