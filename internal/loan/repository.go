@@ -28,13 +28,12 @@ func (r *repository) Create(ctx context.Context, loan entity.LoanApplication) (e
 	loan.CreatedAt = now
 	loan.UpdatedAt = now
 	loan.Status = "PENDING"
-	loan.Disbursed = false
 
 	query := `
 		INSERT INTO loan_applications 
-			(user_id, product_id, amount, tenor_month, interest_type, admin_fee, status, disbursed, created_at, updated_at)
+			(user_id, product_id, amount, tenor_month, interest_type, admin_fee, status, disbursement_scheduled_at, created_at, updated_at)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-		RETURNING id, user_id, product_id, amount, tenor_month, interest_type, admin_fee, status, disbursed, disbursed_at, created_at, updated_at
+		RETURNING id, user_id, product_id, amount, tenor_month, interest_type, admin_fee, status, disbursement_scheduled_at, disbursed_at, created_at, updated_at
 	`
 
 	err := r.db.QueryRow(ctx, query,
@@ -45,7 +44,7 @@ func (r *repository) Create(ctx context.Context, loan entity.LoanApplication) (e
 		loan.InterestType,
 		loan.AdminFee,
 		loan.Status,
-		loan.Disbursed,
+		loan.DisbursementScheduledAt,
 		loan.CreatedAt,
 		loan.UpdatedAt,
 	).Scan(
@@ -57,7 +56,7 @@ func (r *repository) Create(ctx context.Context, loan entity.LoanApplication) (e
 		&loan.InterestType,
 		&loan.AdminFee,
 		&loan.Status,
-		&loan.Disbursed,
+		&loan.DisbursementScheduledAt,
 		&loan.DisbursedAt,
 		&loan.CreatedAt,
 		&loan.UpdatedAt,
