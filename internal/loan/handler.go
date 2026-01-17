@@ -23,6 +23,7 @@ func NewHandler(svc Service, log *zap.Logger) *Handler {
 func (h *Handler) RegisterRoutes(g *echo.Group) {
 	g.POST("/loan-application", h.Create, middleware.ValidateInternalToken)
 	g.POST("/loan-application/approval", h.Approval, middleware.ValidateInternalToken)
+	g.POST("/loan-application/batch-approval", h.BatchApproval, middleware.ValidateInternalToken)
 }
 
 func (h *Handler) Create(c echo.Context) error {
@@ -92,6 +93,44 @@ func (h *Handler) Approval(c echo.Context) error {
 
 	return c.JSON(http.StatusOK,
 		response.Success("loan application approval updated", resp, http.StatusOK),
+	)
+
+}
+
+func (h *Handler) BatchApproval(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	var req []LoanApprovalRequest
+
+	if err := c.Bind(&req); err != nil {
+		log.Error(ctx, "invalid request body", err)
+		return c.JSON(
+			http.StatusBadRequest,
+			response.Error("invalid request body", http.StatusBadRequest),
+		)
+	}
+
+	resp, err := h.service.BatchApproval(ctx, req)
+
+	if err != nil {
+		if errors.Is(err, ErrLoanNotPendingOrNotFound) {
+			return c.JSON(
+				http.StatusNotFound,
+				response.Error(err.Error(), http.StatusNotFound))
+		}
+		log.Error(ctx, "failed to update approval of loan application", err)
+		return c.JSON(
+			http.StatusInternalServerError,
+			response.Error("failed to update approval of loan application", http.StatusInternalServerError),
+		)
+	}
+
+	log.Info(ctx, "loan application batch approval updated",
+		zap.Int("Total Updated Loan", resp.TotalLoanUpdate),
+	)
+
+	return c.JSON(http.StatusOK,
+		response.Success("loan application batch approval updated", resp, http.StatusOK),
 	)
 
 }
