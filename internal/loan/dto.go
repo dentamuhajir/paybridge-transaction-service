@@ -30,3 +30,16 @@ type LoanApprovalResponse struct {
 	ID     string `db:"id"`
 	Status string `db:"status"`
 }
+
+type LoanBatchApprovalResponse struct {
+	TotalLoanUpdate int                       `json:"total_loan_update"`
+	SuccessCount    int                       `json:"success_count"`
+	FailedCount     int                       `json:"failed_count"`
+	Results         []LoanBatchApprovalResult `json:"results"`
+}
+
+type LoanBatchApprovalResult struct {
+	ID     string `json:"id"`
+	Status string `json:"status"`
+	Error  string `json:"error,omitempty"`
+}
