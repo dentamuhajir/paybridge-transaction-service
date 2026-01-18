@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"log"
 	"paybridge-transaction-service/internal/config"
-	"paybridge-transaction-service/internal/wallet"
+	"paybridge-transaction-service/internal/event"
 	kafkaInfra "paybridge-transaction-service/internal/infra/kafka"
+	"paybridge-transaction-service/internal/wallet"
 
 	"github.com/segmentio/kafka-go"
 )
@@ -23,7 +24,7 @@ type WalletCreateConsumer struct {
 
 func NewWalletCreateConsumer(cfg *config.Config, svc wallet.Service) *WalletCreateConsumer {
 	return &WalletCreateConsumer{
-		reader:  kafkaInfra.NewReader(cfg, "wallet"),
+		reader:  kafkaInfra.NewReader(cfg, event.UserCreatedTopic),
 		Service: svc,
 	}
 }
@@ -37,7 +38,7 @@ func (c *WalletCreateConsumer) Start(ctx context.Context) {
 			log.Println("Fetch error:", err)
 			continue
 		}
- 
+
 		var event WalletCreateEvent
 		if err := json.Unmarshal(msg.Value, &event); err != nil {
 			log.Println("Invalid message:", err)
