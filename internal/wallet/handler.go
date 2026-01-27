@@ -42,18 +42,6 @@ func (h *Handler) Get(c echo.Context) error {
 	)
 }
 
-// CreateWalletHandler godoc
-// @Summary Create wallet
-// @Description Create a new wallet for a user
-// @Tags Wallet
-// @Accept json
-// @Produce json
-// @Param request body CreateWalletReq true "Wallet creation payload"
-// @Success 200 {object} response.SwaggerSuccessResponse
-// @Failure 400 {object} response.SwaggerErrorResponse
-// @Failure 500 {object} response.SwaggerErrorResponse
-// @Security InternalTokenAuth
-// @Router /wallet [post]
 func (h *Handler) Create(c echo.Context) error {
 	ctx := c.Request().Context()
 	traceID := c.Request().Header.Get("X-Trace-Id")
