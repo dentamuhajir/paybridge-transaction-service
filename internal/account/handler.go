@@ -35,7 +35,11 @@ func (h *Handler) GetAccount(c echo.Context) error {
 		)
 	}
 
-	resp, _ := h.service.GetAccount(ctx, ownerID)
+	resp, err := h.service.GetAccount(ctx, ownerID)
+
+	if err != nil {
+		return mapError(c, h.log, err)
+	}
 
 	return c.JSON(http.StatusOK,
 		response.Success("Account is found", resp, http.StatusOK),

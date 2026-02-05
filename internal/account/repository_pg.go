@@ -2,7 +2,6 @@ package account
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -10,8 +9,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
-
-var ErrAccountNotFound = errors.New("Account not found")
 
 type repository struct {
 	db  *pgxpool.Pool
@@ -24,7 +21,6 @@ func NewRepository(db *pgxpool.Pool, log *zap.Logger) Repository {
 
 func (r *repository) GetAccount(ctx context.Context, ownerID uuid.UUID) (Account, error) {
 
-	fmt.Println("owner id", ownerID)
 	var account Account
 	query := `
 		SELECT id, owner_id, status
@@ -39,7 +35,7 @@ func (r *repository) GetAccount(ctx context.Context, ownerID uuid.UUID) (Account
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			r.log.Error("error account not found ", zap.Error(err))
+			r.log.Error("failed to query account", zap.Error(err))
 			return Account{}, ErrAccountNotFound
 		}
 		r.log.Error("failed to get account ", zap.Error(err))

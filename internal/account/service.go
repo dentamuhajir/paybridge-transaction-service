@@ -9,7 +9,7 @@ import (
 
 type Service interface {
 	CreateAccountWithInitialBalances(ctx context.Context, userID uuid.UUID) error
-	GetAccount(ctx context.Context, userID uuid.UUID) (Account,error)
+	GetAccount(ctx context.Context, userID uuid.UUID) (Account, error)
 }
 
 type service struct {
@@ -25,6 +25,20 @@ func (s *service) CreateAccountWithInitialBalances(ctx context.Context, userID u
 	return s.repo.CreateAccountWithBalance(ctx, userID)
 }
 
-func (s *service) GetAccount(ctx context.Context, userID uuid.UUID) (Account,error) {
-	return s.repo.GetAccount(ctx, userID)
+func (s *service) GetAccount(ctx context.Context, userID uuid.UUID) (Account, error) {
+	if userID == uuid.Nil {
+		return Account{}, ErrInvalidUserID
+	}
+
+	account, err := s.repo.GetAccount(ctx, userID)
+
+	if err != nil {
+		return Account{}, err
+	}
+
+	if account.Status != StatusActive {
+		return Account{}, ErrAccountInactive
+	}
+
+	return account, err
 }
