@@ -15,116 +15,36 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/wallet": {
-            "post": {
+        "/account/{owner_id}": {
+            "get": {
                 "security": [
                     {
-                        "InternalTokenAuth": []
+                        "BearerAuth": []
                     }
                 ],
-                "description": "Create a new wallet for a user",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Internal account lookup",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Wallet"
+                    "Internal Account"
                 ],
-                "summary": "Create wallet",
+                "summary": "Get account by owner ID",
                 "parameters": [
                     {
-                        "description": "Wallet creation payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/wallet.CreateWalletReq"
-                        }
+                        "type": "string",
+                        "description": "Owner UUID",
+                        "name": "owner_id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.SwaggerSuccessResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.SwaggerErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.SwaggerErrorResponse"
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "definitions": {
-        "response.SwaggerErrorResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "description": "always null on errors"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "bad request"
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 400
-                },
-                "success": {
-                    "type": "boolean",
-                    "example": false
-                }
-            }
-        },
-        "response.SwaggerSuccessResponse": {
-            "type": "object",
-            "properties": {
-                "data": {},
-                "message": {
-                    "type": "string",
-                    "example": "success"
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 200
-                },
-                "success": {
-                    "type": "boolean",
-                    "example": true
-                }
-            }
-        },
-        "wallet.CreateWalletReq": {
-            "type": "object",
-            "required": [
-                "currency",
-                "user_id"
-            ],
-            "properties": {
-                "currency": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
+                "responses": {}
             }
         }
     },
     "securityDefinitions": {
-        "InternalTokenAuth": {
-            "description": "Provide token as: Bearer \u003ctoken\u003e",
+        "BearerAuth": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -136,10 +56,10 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/api/v1",
+	BasePath:         "/internal",
 	Schemes:          []string{},
-	Title:            "Paybridge Transaction Service API",
-	Description:      "API documentation for Transaction Services",
+	Title:            "Paybridge Transaction Service",
+	Description:      "Internal transaction & account service",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

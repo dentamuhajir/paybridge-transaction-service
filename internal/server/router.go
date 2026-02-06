@@ -22,13 +22,13 @@ func NewRouter(db *pgxpool.Pool, log *zap.Logger) *echo.Echo {
 
 	apiVersion := "/api/v1"
 
-	internal := "internal"
+	internal := "/internal"
 
 	// Swagger Information
 	docs.SwaggerInfo.Title = "Paybridge Transaction Service API"
 	docs.SwaggerInfo.Description = "API documentation for Transaction Services"
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.BasePath = apiVersion
+	docs.SwaggerInfo.BasePath = internal
 
 	// Swagger route
 	e.GET("/swagger-ui/*", echoSwagger.WrapHandler)

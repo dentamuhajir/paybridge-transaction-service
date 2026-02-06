@@ -24,6 +24,15 @@ func (h *Handler) RegisterInternalRoutes(g *echo.Group) {
 	g.GET("/account/:owner_id", h.GetAccount, middleware.ValidateInternalToken)
 }
 
+// GetAccount godoc
+//
+// @Summary     Get account by owner ID
+// @Description Internal account lookup
+// @Tags        Internal Account
+// @Produce     json
+// @Param       owner_id path string true "Owner UUID"
+// @Security    BearerAuth
+// @Router      /account/{owner_id} [get]
 func (h *Handler) GetAccount(c echo.Context) error {
 	ctx := c.Request().Context()
 

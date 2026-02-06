@@ -1,83 +1,29 @@
-basePath: /api/v1
-definitions:
-  response.SwaggerErrorResponse:
-    properties:
-      data:
-        description: always null on errors
-      message:
-        example: bad request
-        type: string
-      status:
-        example: 400
-        type: integer
-      success:
-        example: false
-        type: boolean
-    type: object
-  response.SwaggerSuccessResponse:
-    properties:
-      data: {}
-      message:
-        example: success
-        type: string
-      status:
-        example: 200
-        type: integer
-      success:
-        example: true
-        type: boolean
-    type: object
-  wallet.CreateWalletReq:
-    properties:
-      currency:
-        type: string
-      user_id:
-        type: string
-    required:
-    - currency
-    - user_id
-    type: object
+basePath: /internal
 info:
   contact: {}
-  description: API documentation for Transaction Services
-  title: Paybridge Transaction Service API
+  description: Internal transaction & account service
+  title: Paybridge Transaction Service
   version: "1.0"
 paths:
-  /wallet:
-    post:
-      consumes:
-      - application/json
-      description: Create a new wallet for a user
+  /account/{owner_id}:
+    get:
+      description: Internal account lookup
       parameters:
-      - description: Wallet creation payload
-        in: body
-        name: request
+      - description: Owner UUID
+        in: path
+        name: owner_id
         required: true
-        schema:
-          $ref: '#/definitions/wallet.CreateWalletReq'
+        type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.SwaggerSuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.SwaggerErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.SwaggerErrorResponse'
+      responses: {}
       security:
-      - InternalTokenAuth: []
-      summary: Create wallet
+      - BearerAuth: []
+      summary: Get account by owner ID
       tags:
-      - Wallet
+      - Internal Account
 securityDefinitions:
-  InternalTokenAuth:
-    description: 'Provide token as: Bearer <token>'
+  BearerAuth:
     in: header
     name: Authorization
     type: apiKey
