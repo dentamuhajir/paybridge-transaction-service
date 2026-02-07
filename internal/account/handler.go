@@ -51,6 +51,11 @@ func (h *Handler) GetAccount(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK,
-		response.Success("Account is found", resp, http.StatusOK),
+		response.Success("Account is found",
+			AccountResponse{
+				resp.OwnerID,
+				resp.Status,
+			},
+			http.StatusOK),
 	)
 }
