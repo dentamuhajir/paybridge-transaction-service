@@ -2,76 +2,48 @@ package logger
 
 import (
 	"context"
-	"time"
 
-	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-var Log *zap.Logger
+type Logger struct {
+	log *zap.Logger
+}
 
-// Context keys for trace
-type ctxKey string
-
-const (
-	CtxTraceID ctxKey = "trace_id"
-	CtxSpanID  ctxKey = "span_id"
-)
-
-// New creates a zap logger instance (DI entry point)
-func New() (*zap.Logger, error) {
+func New() (*Logger, error) {
 	cfg := zap.NewProductionConfig()
-
-	// Optional: customize encoder for ECS-like output
 	cfg.EncoderConfig.TimeKey = "@timestamp"
 	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	return cfg.Build()
-}
-
-// Info logs an info-level message with trace/span from context
-func Info(ctx context.Context, message string, fields ...zap.Field) {
-	traceID, _ := ctx.Value(CtxTraceID).(string)
-	spanID, _ := ctx.Value(CtxSpanID).(string)
-
-	coreFields := []zap.Field{
-		zap.String("@timestamp", time.Now().UTC().Format(time.RFC3339Nano)),
-		zap.String("@version", "1"),
-		zap.String("logger_name", "transaction-service"),
-		zap.String("thread_name", "goroutine"),
-		zap.String("level", "INFO"),
-		zap.Int("level_value", 20000),
-		zap.String("trace_id", traceID),
-		zap.String("span_id", spanID),
+	z, err := cfg.Build()
+	if err != nil {
+		return nil, err
 	}
-	coreFields = append(coreFields, fields...)
 
-	Log.Info(message, coreFields...)
+	return &Logger{log: z}, nil
 }
 
-// Error logs error-level messages
-func Error(ctx context.Context, message string, err error, fields ...zap.Field) {
-	traceID, _ := ctx.Value(CtxTraceID).(string)
-	spanID, _ := ctx.Value(CtxSpanID).(string)
+func (l *Logger) WithContext(ctx context.Context) *zap.Logger {
+	span := trace.SpanFromContext(ctx)
+	sc := span.SpanContext()
 
-	coreFields := []zap.Field{
-		zap.String("@timestamp", time.Now().UTC().Format(time.RFC3339Nano)),
-		zap.String("@version", "1"),
-		zap.String("logger_name", "transaction-service"),
-		zap.String("thread_name", "goroutine"),
-		zap.String("level", "ERROR"),
-		zap.Int("level_value", 40000),
-		zap.String("trace_id", traceID),
-		zap.String("span_id", spanID),
-		zap.Error(err),
+	if !sc.IsValid() {
+		return l.log
 	}
-	coreFields = append(coreFields, fields...)
 
-	Log.Error(message, coreFields...)
+	return l.log.With(
+		zap.String("trace_id", sc.TraceID().String()),
+		zap.String("span_id", sc.SpanID().String()),
+	)
 }
 
-// Helper to generate new UUID string
-func NewUUID() string {
-	return uuid.New().String()
+func (l *Logger) Info(ctx context.Context, msg string, fields ...zap.Field) {
+	l.WithContext(ctx).Info(msg, fields...)
+}
+
+func (l *Logger) Error(ctx context.Context, msg string, err error, fields ...zap.Field) {
+	fields = append(fields, zap.Error(err))
+	l.WithContext(ctx).Error(msg, fields...)
 }

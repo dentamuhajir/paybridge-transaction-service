@@ -1,66 +1,66 @@
 package wallet
 
-import (
-	"context"
+// import (
+// 	"context"
 
-	"github.com/google/uuid"
-	"go.uber.org/zap"
-)
+// 	"github.com/google/uuid"
+// 	"go.uber.org/zap"
+// )
 
-type Service interface {
-	CreateWallet(ctx context.Context, req CreateWalletReq) (*CreateWalletResp, error)
-	InquiryWallet(ctx context.Context, userID string) (*InquiryWalletResp, error)
-}
+// type Service interface {
+// 	CreateWallet(ctx context.Context, req CreateWalletReq) (*CreateWalletResp, error)
+// 	InquiryWallet(ctx context.Context, userID string) (*InquiryWalletResp, error)
+// }
 
-type service struct {
-	repo Repository
-	log  *zap.Logger
-}
+// type service struct {
+// 	repo Repository
+// 	log  *zap.Logger
+// }
 
-func NewService(repo Repository, log *zap.Logger) Service {
-	return &service{repo: repo, log: log}
-}
+// func NewService(repo Repository, log *zap.Logger) Service {
+// 	return &service{repo: repo, log: log}
+// }
 
-func (s *service) CreateWallet(ctx context.Context, req CreateWalletReq) (*CreateWalletResp, error) {
+// func (s *service) CreateWallet(ctx context.Context, req CreateWalletReq) (*CreateWalletResp, error) {
 
-	userUUID, err := uuid.Parse(req.UserID)
-	if err != nil {
-		return nil, err
-	}
+// 	userUUID, err := uuid.Parse(req.UserID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	wallet := &Wallet{
-		UserID:   userUUID,
-		Balance:  0,
-		Currency: req.Currency,
-		Status:   "ACTIVE",
-	}
+// 	wallet := &Wallet{
+// 		UserID:   userUUID,
+// 		Balance:  0,
+// 		Currency: req.Currency,
+// 		Status:   "ACTIVE",
+// 	}
 
-	result, err := s.repo.Create(ctx, wallet)
-	if err != nil {
-		return nil, err
-	}
+// 	result, err := s.repo.Create(ctx, wallet)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &CreateWalletResp{
-		ID:      result.ID.String(),
-		UserID:  result.UserID.String(),
-		Balance: result.Balance,
-		Status:  result.Status,
-	}, nil
+// 	return &CreateWalletResp{
+// 		ID:      result.ID.String(),
+// 		UserID:  result.UserID.String(),
+// 		Balance: result.Balance,
+// 		Status:  result.Status,
+// 	}, nil
 
-}
+// }
 
-func (s *service) InquiryWallet(ctx context.Context, userID string) (*InquiryWalletResp, error) {
+// func (s *service) InquiryWallet(ctx context.Context, userID string) (*InquiryWalletResp, error) {
 
-	result, err := s.repo.Get(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
+// 	result, err := s.repo.Get(ctx, userID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return &InquiryWalletResp{
-		UserID:   result.UserID.String(),
-		Balance:  result.Balance,
-		Currency: result.Currency,
-		Status:   result.Status,
-	}, nil
+// 	return &InquiryWalletResp{
+// 		UserID:   result.UserID.String(),
+// 		Balance:  result.Balance,
+// 		Currency: result.Currency,
+// 		Status:   result.Status,
+// 	}, nil
 
-}
+// }

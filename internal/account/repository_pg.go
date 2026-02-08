@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+	"paybridge-transaction-service/internal/infra/logger"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -11,10 +12,10 @@ import (
 
 type repository struct {
 	db  *pgxpool.Pool
-	log *zap.Logger
+	log *logger.Logger
 }
 
-func NewRepository(db *pgxpool.Pool, log *zap.Logger) Repository {
+func NewRepository(db *pgxpool.Pool, log *logger.Logger) Repository {
 	return &repository{db, log}
 }
 
@@ -34,10 +35,21 @@ func (r *repository) GetAccount(ctx context.Context, ownerID uuid.UUID) (Account
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			r.log.Error("failed to query account", zap.Error(err))
+			r.log.Error(
+				ctx,
+				"account not found",
+				err,
+				zap.String("owner_id", ownerID.String()),
+			)
+
 			return Account{}, ErrAccountNotFound
 		}
-		r.log.Error("failed to get account ", zap.Error(err))
+		r.log.Error(
+			ctx,
+			"failed to get account",
+			err,
+			zap.String("owner_id", ownerID.String()),
+		)
 		return Account{}, err
 	}
 
@@ -82,10 +94,10 @@ func (r *repository) CreateAccountWithBalance(ctx context.Context, userID uuid.U
 	VALUES
 		($1, $2, 0), 
 		($1, $3, 0), 
-		($1, $4, 0), -- LOAN_INTEREST
-		($1, $5, 0), -- FEE
-		($1, $6, 0), -- ESCROW
-		($1, $7, 0)  -- RESERVE
+		($1, $4, 0), 
+		($1, $5, 0), 
+		($1, $6, 0), 
+		($1, $7, 0)
 	ON CONFLICT DO NOTHING`,
 		accountID,
 		BalanceTypeCash,

@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"paybridge-transaction-service/internal/infra/logger"
 	"paybridge-transaction-service/internal/loan/entity"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"go.uber.org/zap"
 )
 
 type Repository interface {
@@ -21,10 +21,10 @@ var ErrLoanNotPendingOrNotFound = errors.New("loan not pending or not found")
 
 type repository struct {
 	db  *pgxpool.Pool
-	log *zap.Logger
+	log *logger.Logger
 }
 
-func NewRepository(db *pgxpool.Pool, log *zap.Logger) Repository {
+func NewRepository(db *pgxpool.Pool, log *logger.Logger) Repository {
 	return &repository{db: db, log: log}
 }
 
@@ -68,7 +68,7 @@ func (r *repository) Create(ctx context.Context, loan entity.LoanApplication) (e
 	)
 
 	if err != nil {
-		r.log.Error("failed to create loan application", zap.Error(err))
+		//r.log.Error("failed to create loan application", zap.Error(err))
 		return entity.LoanApplication{}, err
 	}
 
@@ -98,10 +98,10 @@ func (r *repository) Approval(ctx context.Context, loan entity.LoanApplication) 
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			r.log.Error("Err Loan Not Pending Or Not Found ", zap.Error(err))
+			//r.log.Error("Err Loan Not Pending Or Not Found ", zap.Error(err))
 			return entity.LoanApplication{}, ErrLoanNotPendingOrNotFound
 		}
-		r.log.Error("failed to approve loan application ", zap.Error(err))
+		//r.log.Error("failed to approve loan application ", zap.Error(err))
 		return entity.LoanApplication{}, err
 	}
 

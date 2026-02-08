@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 	"paybridge-transaction-service/internal/config"
-	"paybridge-transaction-service/internal/kafka/consumer"
+	"paybridge-transaction-service/internal/infra/otel"
 	"paybridge-transaction-service/internal/server"
 )
 
@@ -22,12 +22,23 @@ func NewBootstrap(cfg *config.Config) *Bootstrap {
 }
 
 func (b *Bootstrap) Start() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	ctx := context.Background()
+	shutdown, err := otel.InitTracer(ctx, "paybridge-transaction-service")
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = shutdown(context.Background())
+	}()
 
 	// start kafka consumers
-	walletConsumer := consumer.NewWalletCreateConsumer(b.container.Cfg, b.container.Service.WalletService)
-	go walletConsumer.Start(ctx)
+	// walletConsumer := consumer.NewWalletCreateConsumer(
+	// 	b.container.Cfg,
+	// 	b.container.Service.WalletService,
+	// )
+	// go walletConsumer.Start(ctx)
 
 	// start HTTP server (blocking)
 	return server.Run(

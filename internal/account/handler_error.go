@@ -4,13 +4,13 @@ import (
 	"errors"
 	"net/http"
 
+	"paybridge-transaction-service/internal/infra/logger"
 	"paybridge-transaction-service/pkg/response"
 
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 )
 
-func mapError(c echo.Context, log *zap.Logger, err error) error {
+func mapError(c echo.Context, log *logger.Logger, err error) error {
 	switch {
 	case errors.Is(err, ErrInvalidUserID):
 		return c.JSON(http.StatusBadRequest,
@@ -25,7 +25,6 @@ func mapError(c echo.Context, log *zap.Logger, err error) error {
 			response.Error("account inactive", http.StatusConflict))
 
 	default:
-		log.Error("unexpected account error", zap.Error(err))
 		return c.JSON(http.StatusInternalServerError,
 			response.Error("internal server error", http.StatusInternalServerError))
 	}

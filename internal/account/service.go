@@ -2,9 +2,9 @@ package account
 
 import (
 	"context"
+	"paybridge-transaction-service/internal/infra/logger"
 
 	"github.com/google/uuid"
-	"go.uber.org/zap"
 )
 
 type Service interface {
@@ -14,10 +14,10 @@ type Service interface {
 
 type service struct {
 	repo Repository
-	log  *zap.Logger
+	log  *logger.Logger
 }
 
-func NewService(repo Repository, log *zap.Logger) Service {
+func NewService(repo Repository, log *logger.Logger) Service {
 	return &service{repo, log}
 }
 

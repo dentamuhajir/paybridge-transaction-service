@@ -3,20 +3,20 @@ package account
 import (
 	"net/http"
 
+	"paybridge-transaction-service/internal/infra/logger"
 	"paybridge-transaction-service/internal/server/middleware"
 	"paybridge-transaction-service/pkg/response"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 )
 
 type Handler struct {
 	service Service
-	log     *zap.Logger
+	log     *logger.Logger
 }
 
-func NewHandler(svc Service, log *zap.Logger) *Handler {
+func NewHandler(svc Service, log *logger.Logger) *Handler {
 	return &Handler{service: svc, log: log}
 }
 

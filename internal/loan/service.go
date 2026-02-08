@@ -2,12 +2,12 @@ package loan
 
 import (
 	"context"
+	"paybridge-transaction-service/internal/infra/logger"
 	"paybridge-transaction-service/internal/loan/entity"
 	"sync"
 	"time"
 
 	"github.com/labstack/gommon/log"
-	"go.uber.org/zap"
 )
 
 type Service interface {
@@ -18,10 +18,10 @@ type Service interface {
 
 type service struct {
 	repo Repository
-	log  *zap.Logger
+	log  *logger.Logger
 }
 
-func NewService(r Repository, log *zap.Logger) Service {
+func NewService(r Repository, log *logger.Logger) Service {
 	return &service{repo: r, log: log}
 }
 
