@@ -13,6 +13,7 @@ type Config struct {
 	Server   Server
 	Database Database
 	Broker   Broker
+	Otel     Otel
 }
 
 type Server struct {
@@ -33,6 +34,10 @@ type Database struct {
 
 type Broker struct {
 	Host string `env:"KAFKA_BROKER"`
+}
+
+type Otel struct {
+	OtelExporterEndpoint string `env:"OTEL_EXPORTER_OTLP_ENDPOINT"`
 }
 
 // Load loads .env file (if exists) + returns populated Config
@@ -56,6 +61,10 @@ func Load() (*Config, error) {
 		},
 		Broker: Broker{
 			Host: getEnv("KAFKA_BROKER", ""),
+		},
+
+		Otel: Otel{
+			OtelExporterEndpoint: getEnv("OTEL_EXPORTER_OTLP_ENDPOINT", ""),
 		},
 	}
 

@@ -25,7 +25,7 @@ func (b *Bootstrap) Start() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	shutdown, err := otel.InitTracer(ctx, "paybridge-transaction-service")
+	shutdown, err := otel.InitTracer(ctx, b.container.Cfg.Server.Name, b.container.Cfg.Otel.OtelExporterEndpoint)
 	if err != nil {
 		return err
 	}

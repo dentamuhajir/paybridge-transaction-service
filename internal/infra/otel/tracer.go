@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-func InitTracer(ctx context.Context, serviceName string) (func(context.Context) error, error) {
+func InitTracer(ctx context.Context, serviceName string, endpoint string) (func(context.Context) error, error) {
 	exporter, err := otlptracegrpc.New(
 		ctx,
-		otlptracegrpc.WithEndpoint("paybridge-jaeger:4317"),
+		otlptracegrpc.WithEndpoint(endpoint),
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithDialOption(grpc.WithBlock()),
 	)
