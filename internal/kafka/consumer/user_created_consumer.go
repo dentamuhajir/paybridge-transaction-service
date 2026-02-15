@@ -6,6 +6,7 @@ import (
 	"log"
 	"paybridge-transaction-service/internal/account"
 	"paybridge-transaction-service/internal/config"
+	"paybridge-transaction-service/internal/event"
 	kafkaInfra "paybridge-transaction-service/internal/infra/kafka"
 
 	"github.com/google/uuid"
@@ -23,7 +24,7 @@ type UserCreateConsumer struct {
 
 func NewUserCreateConsumer(cfg *config.Config, svc account.Service) *UserCreateConsumer {
 	return &UserCreateConsumer{
-		reader:  kafkaInfra.NewReader(cfg, "account"),
+		reader:  kafkaInfra.NewReader(cfg, event.UserCreatedTopic),
 		Service: svc,
 	}
 }
@@ -46,7 +47,7 @@ func (c *UserCreateConsumer) Start(ctx context.Context) {
 		}
 
 		if err := c.Service.CreateAccountWithInitialBalances(ctx, event.UserID); err != nil {
-			log.Println("Create wallet failed:", err)
+			log.Println("Create account failed:", err)
 			continue // DO NOT COMMIT → Kafka will retry
 		}
 

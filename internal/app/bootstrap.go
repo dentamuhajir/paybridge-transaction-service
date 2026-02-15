@@ -4,6 +4,7 @@ import (
 	"context"
 	"paybridge-transaction-service/internal/config"
 	"paybridge-transaction-service/internal/infra/otel"
+	"paybridge-transaction-service/internal/kafka/consumer"
 	"paybridge-transaction-service/internal/server"
 )
 
@@ -35,10 +36,18 @@ func (b *Bootstrap) Start() error {
 
 	// start kafka consumers
 	// walletConsumer := consumer.NewWalletCreateConsumer(
-	// 	b.container.Cfg,
+	// 	b.container.Cfg,,
 	// 	b.container.Service.WalletService,
 	// )
 	// go walletConsumer.Start(ctx)
+
+	// start kafka consumers
+	userCreatedConsumer := consumer.NewUserCreateConsumer(
+		b.container.Cfg,
+		b.container.Service.AccountService,
+	)
+
+	go userCreatedConsumer.Start(ctx)
 
 	// start HTTP server (blocking)
 	return server.Run(
