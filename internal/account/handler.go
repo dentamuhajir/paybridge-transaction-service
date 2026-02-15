@@ -2,7 +2,6 @@ package account
 
 import (
 	"net/http"
-	"sync/atomic"
 
 	"paybridge-transaction-service/internal/infra/logger"
 	"paybridge-transaction-service/internal/server/middleware"
@@ -40,25 +39,12 @@ func (h *Handler) GetAccount(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	count := atomic.AddInt32(&h.counter, 1)
-
-	h.log.Info(ctx, "retry test attempt",
-		zap.Int32("attempt", count),
-	)
-
-	// First 2 attempts -> 500
-	if count <= 2 {
-		return c.JSON(
-			http.StatusInternalServerError,
-			response.Error("temporary failure", http.StatusInternalServerError),
-		)
-	}
-
 	ownerIDStr := c.Param("owner_id")
 	ownerID, err := uuid.Parse(ownerIDStr)
 	h.log.Info(ctx, "get account request received",
 		zap.String("owner_id", ownerIDStr),
 	)
+
 	if err != nil {
 		h.log.Warn(ctx, "invalid owner_id format",
 			zap.String("owner_id", ownerIDStr),
