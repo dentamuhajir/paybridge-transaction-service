@@ -14,7 +14,7 @@ import (
 )
 
 type CreateUserEvent struct {
-	UserID uuid.UUID `json:"user_id"`
+	UserID uuid.UUID `json:"userId"`
 }
 
 type UserCreateConsumer struct {
