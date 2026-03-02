@@ -15,7 +15,8 @@ pipeline {
                 
                 withCredentials([file(credentialsId: 'transaction-svc-env', variable: 'ENV_FILE')]) {
                     sh "cp \$ENV_FILE .env"
-                    sh "docker compose up -d --build"
+                    //sh "docker compose up -d --build"
+                    sh "DOCKER_BUILDKIT=0 docker compose up -d --build"
                 }
             }
         }
